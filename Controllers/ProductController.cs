@@ -22,14 +22,14 @@ namespace InventorySystem.API.Controllers
             var product = new Product
             {
                 Id = Guid.NewGuid(),
-                Name = dto.name,
+                Name = dto.Name,
                 Sku = dto.Sku,
-                Unit = dto.unit,
+                Unit = dto.Unit,
                 ImportPrice = dto.ImportPrice,
                 SellPrice = dto.SellPrice,
                 ReorderLevel = dto.ReorderLevel,
                 IsActive = true,
-                CreatedAt = DateTime.UtcNow
+                CreatedAt = DateTime.UtcNow,
             };
 
             _context.Products.Add(product);

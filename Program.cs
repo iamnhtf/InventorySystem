@@ -1,6 +1,6 @@
+using System.Text.Json.Serialization;
 using InventorySystem.API.Data;
 using Microsoft.EntityFrameworkCore;
-using System.Text.Json.Serialization;
 
 namespace InventorySystem.API
 {
@@ -18,18 +18,15 @@ namespace InventorySystem.API
             builder.Services.AddSwaggerGen();
 
             builder.Services.AddDbContext<AppDbContext>(options =>
-            options.UseSqlServer(
-            builder.Configuration.GetConnectionString("DefaultConnection")
-                )
+                options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection"))
             );
 
-            builder.Services.AddControllers()
-            .AddJsonOptions(options =>
-            {
-            options.JsonSerializerOptions.Converters.Add(
-            new JsonStringEnumConverter()
-                );
-            });
+            builder
+                .Services.AddControllers()
+                .AddJsonOptions(options =>
+                {
+                    options.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter());
+                });
 
             var app = builder.Build();
 
@@ -37,14 +34,21 @@ namespace InventorySystem.API
             app.UseSwagger();
             app.UseSwaggerUI();
 
-            app.UseHttpsRedirection();
+            //app.UseHttpsRedirection();
             app.UseAuthorization();
 
             app.MapControllers();
 
+            using (var scope = app.Services.CreateScope())
+            {
+                var db = scope.ServiceProvider.GetRequiredService<AppDbContext>();
+                if (db.Database.GetPendingMigrations().Any())
+                {
+                    db.Database.Migrate();
+                }
+            }
+
             app.Run();
-
-
         }
     }
 }
